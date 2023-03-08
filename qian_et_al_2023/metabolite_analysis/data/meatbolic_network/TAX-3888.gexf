@@ -1,0 +1,382 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+  <meta lastmodifieddate="2023-03-03">
+    <creator>NetworkX 2.8.6</creator>
+  </meta>
+  <graph defaultedgetype="directed" mode="static" name="">
+    <nodes>
+      <node id="Pyruvate-dehydrogenase-acetylDHlipoyl" label="Pyruvate-dehydrogenase-acetylDHlipoyl" />
+      <node id="Pyruvate-dehydrogenase-dihydrolipoate" label="Pyruvate-dehydrogenase-dihydrolipoate" />
+      <node id="ACETYL-COA" label="ACETYL-COA" />
+      <node id="GLT" label="GLT" />
+      <node id="GLN" label="GLN" />
+      <node id="AMMONIUM" label="AMMONIUM" />
+      <node id="L-1-PHOSPHATIDYL-ETHANOLAMINE" label="L-1-PHOSPHATIDYL-ETHANOLAMINE" />
+      <node id="L-1-PHOSPHATIDYL-SERINE" label="L-1-PHOSPHATIDYL-SERINE" />
+      <node id="CDP-ETHANOLAMINE" label="CDP-ETHANOLAMINE" />
+      <node id="CDP-CHOLINE" label="CDP-CHOLINE" />
+      <node id="PHOSPHATIDYLCHOLINE" label="PHOSPHATIDYLCHOLINE" />
+      <node id="PHOSPHORYL-CHOLINE" label="PHOSPHORYL-CHOLINE" />
+      <node id="CHOLINE" label="CHOLINE" />
+      <node id="PHOSPHORYL-ETHANOLAMINE" label="PHOSPHORYL-ETHANOLAMINE" />
+      <node id="ETHANOL-AMINE" label="ETHANOL-AMINE" />
+      <node id="CDPDIACYLGLYCEROL" label="CDPDIACYLGLYCEROL" />
+      <node id="L-1-phosphatidyl-inositols" label="L-1-phosphatidyl-inositols" />
+      <node id="L-PHOSPHATIDATE" label="L-PHOSPHATIDATE" />
+      <node id="ACYL-SN-GLYCEROL-3P" label="ACYL-SN-GLYCEROL-3P" />
+      <node id="GLYCEROL-3P" label="GLYCEROL-3P" />
+      <node id="CPD-14741" label="CPD-14741" />
+      <node id="CPD-17616" label="CPD-17616" />
+      <node id="CPD-3942" label="CPD-3942" />
+      <node id="CPD-3631" label="CPD-3631" />
+      <node id="CPD-4462" label="CPD-4462" />
+      <node id="L-1-PHOSPHATIDYL-GLYCEROL-P" label="L-1-PHOSPHATIDYL-GLYCEROL-P" />
+      <node id="L-1-PHOSPHATIDYL-GLYCEROL" label="L-1-PHOSPHATIDYL-GLYCEROL" />
+      <node id="CPD-3944" label="CPD-3944" />
+      <node id="MALONATE" label="MALONATE" />
+      <node id="MALONYL-ACP" label="MALONYL-ACP" />
+      <node id="MALONYL-COA" label="MALONYL-COA" />
+      <node id="1-4-beta-D-Glucan" label="1-4-beta-D-Glucan" />
+      <node id="GXGG-Xyloglucans" label="GXGG-Xyloglucans" />
+      <node id="Xyloglucans-Galactose-23" label="Xyloglucans-Galactose-23" />
+      <node id="XLFG-Xyloglucans" label="XLFG-Xyloglucans" />
+      <node id="Xyloglucans-Galactose-3" label="Xyloglucans-Galactose-3" />
+      <node id="Xyloglucans-Xylose" label="Xyloglucans-Xylose" />
+      <node id="ARG" label="ARG" />
+      <node id="AGMATHINE" label="AGMATHINE" />
+      <node id="L-ORNITHINE" label="L-ORNITHINE" />
+      <node id="PUTRESCINE" label="PUTRESCINE" />
+      <node id="SUCROSE" label="SUCROSE" />
+      <node id="BETA-D-FRUCTOSE" label="BETA-D-FRUCTOSE" />
+      <node id="CPD-12575" label="CPD-12575" />
+      <node id="UDP" label="UDP" />
+      <node id="DUDP" label="DUDP" />
+      <node id="CDP" label="CDP" />
+      <node id="DCDP" label="DCDP" />
+      <node id="UTP" label="UTP" />
+      <node id="CTP" label="CTP" />
+      <node id="CARBAMOYL-P" label="CARBAMOYL-P" />
+      <node id="CARBAMYUL-L-ASPARTATE" label="CARBAMYUL-L-ASPARTATE" />
+      <node id="L-ASPARTATE" label="L-ASPARTATE" />
+      <node id="CPD1F-90" label="CPD1F-90" />
+      <node id="CPD1F-453" label="CPD1F-453" />
+      <node id="CPD-8068" label="CPD-8068" />
+      <node id="CPD-8069" label="CPD-8069" />
+      <node id="CPD-8067" label="CPD-8067" />
+      <node id="CPD-14849" label="CPD-14849" />
+      <node id="CPD-14850" label="CPD-14850" />
+      <node id="CPD1F-437" label="CPD1F-437" />
+      <node id="CPD-520" label="CPD-520" />
+      <node id="CPD1F-95" label="CPD1F-95" />
+      <node id="CPD-6228" label="CPD-6228" />
+      <node id="CPD-6202" label="CPD-6202" />
+      <node id="CPD1F-97" label="CPD1F-97" />
+      <node id="CPD1F-120" label="CPD1F-120" />
+      <node id="CPD-6201" label="CPD-6201" />
+      <node id="CPD1F-134" label="CPD1F-134" />
+      <node id="CPD1F-84" label="CPD1F-84" />
+      <node id="CPD-695" label="CPD-695" />
+      <node id="CPD1F-138" label="CPD1F-138" />
+      <node id="CPD1F-136" label="CPD1F-136" />
+      <node id="CPD1F-132" label="CPD1F-132" />
+      <node id="ENT-KAUR-16-EN-19-AL" label="ENT-KAUR-16-EN-19-AL" />
+      <node id="ENT-KAUR-16-EN-19-OL" label="ENT-KAUR-16-EN-19-OL" />
+      <node id="CPD1F-128" label="CPD1F-128" />
+      <node id="CPD-10332" label="CPD-10332" />
+      <node id="CPD-6203" label="CPD-6203" />
+      <node id="CPD1F-96" label="CPD1F-96" />
+      <node id="CPD1F-86" label="CPD1F-86" />
+      <node id="CPD1F-140" label="CPD1F-140" />
+      <node id="CPD1F-139" label="CPD1F-139" />
+      <node id="CPD-638" label="CPD-638" />
+      <node id="CPD1F-137" label="CPD1F-137" />
+      <node id="CPD-6221" label="CPD-6221" />
+      <node id="UMP" label="UMP" />
+      <node id="CPD-13909" label="CPD-13909" />
+      <node id="CPD-678" label="CPD-678" />
+      <node id="CPD-13713" label="CPD-13713" />
+      <node id="SELENITE" label="SELENITE" />
+      <node id="SELENATE" label="SELENATE" />
+      <node id="2-OXOSUCCINAMATE" label="2-OXOSUCCINAMATE" />
+      <node id="OXALACETIC_ACID" label="OXALACETIC_ACID" />
+      <node id="2-HYDROXYSUCCINAMATE" label="2-HYDROXYSUCCINAMATE" />
+      <node id="ASN" label="ASN" />
+      <node id="NIACINE" label="NIACINE" />
+      <node id="METHYLNICOTINATE" label="METHYLNICOTINATE" />
+      <node id="URACIL" label="URACIL" />
+      <node id="ISOWILLARDIINE" label="ISOWILLARDIINE" />
+      <node id="3-URACIL-1-YL-L-SERINE" label="3-URACIL-1-YL-L-SERINE" />
+      <node id="5-METHYL-THF-GLU-N" label="5-METHYL-THF-GLU-N" />
+      <node id="THF-GLU-N" label="THF-GLU-N" />
+      <node id="5-10-METHENYL-THF-GLU-N" label="5-10-METHENYL-THF-GLU-N" />
+      <node id="N5-Formyl-THF-Glu-N" label="N5-Formyl-THF-Glu-N" />
+      <node id="METHYLENE-THF-GLU-N" label="METHYLENE-THF-GLU-N" />
+      <node id="DIHYDROFOLATE-GLU-N" label="DIHYDROFOLATE-GLU-N" />
+      <node id="FORMYL-THF-GLU-N" label="FORMYL-THF-GLU-N" />
+      <node id="MAL" label="MAL" />
+      <node id="FUM" label="FUM" />
+      <node id="SUC-COA" label="SUC-COA" />
+      <node id="SUC" label="SUC" />
+      <node id="2-KETOGLUTARATE" label="2-KETOGLUTARATE" />
+      <node id="CIS-ACONITATE" label="CIS-ACONITATE" />
+      <node id="THREO-DS-ISO-CITRATE" label="THREO-DS-ISO-CITRATE" />
+      <node id="CIT" label="CIT" />
+      <node id="FRUCTOSE-6P" label="FRUCTOSE-6P" />
+      <node id="FRUCTOSE-16-DIPHOSPHATE" label="FRUCTOSE-16-DIPHOSPHATE" />
+      <node id="GAP" label="GAP" />
+      <node id="DIHYDROXY-ACETONE-PHOSPHATE" label="DIHYDROXY-ACETONE-PHOSPHATE" />
+      <node id="DPG" label="DPG" />
+      <node id="G3P" label="G3P" />
+      <node id="2-PG" label="2-PG" />
+      <node id="PHOSPHO-ENOL-PYRUVATE" label="PHOSPHO-ENOL-PYRUVATE" />
+      <node id="PYRUVATE" label="PYRUVATE" />
+      <node id="Pyruvate-dehydrogenase-lipoate" label="Pyruvate-dehydrogenase-lipoate" />
+      <node id="CPD-8065" label="CPD-8065" />
+      <node id="CPD-8066" label="CPD-8066" />
+      <node id="CPD-170" label="CPD-170" />
+      <node id="CPD-1099" label="CPD-1099" />
+      <node id="CPD-458" label="CPD-458" />
+      <node id="CPD-14553" label="CPD-14553" />
+      <node id="L-SELENOCYSTEINE" label="L-SELENOCYSTEINE" />
+      <node id="CPD-13717" label="CPD-13717" />
+      <node id="SELENOHOMOCYSTEINE" label="SELENOHOMOCYSTEINE" />
+      <node id="MALONATE-S-ALD" label="MALONATE-S-ALD" />
+      <node id="B-ALANINE" label="B-ALANINE" />
+      <node id="PROPIONATE" label="PROPIONATE" />
+      <node id="PROPIONYL-COA" label="PROPIONYL-COA" />
+      <node id="3-HYDROXY-PROPIONYL-COA" label="3-HYDROXY-PROPIONYL-COA" />
+      <node id="3-HYDROXY-PROPIONATE" label="3-HYDROXY-PROPIONATE" />
+      <node id="ACRYLYL-COA" label="ACRYLYL-COA" />
+      <node id="CPD-885" label="CPD-885" />
+      <node id="CPD-477" label="CPD-477" />
+      <node id="CPD-475" label="CPD-475" />
+      <node id="CPD-6224" label="CPD-6224" />
+      <node id="CPD-632" label="CPD-632" />
+      <node id="CPD-482" label="CPD-482" />
+      <node id="CPD-498" label="CPD-498" />
+      <node id="CPD-236" label="CPD-236" />
+      <node id="CPD-251" label="CPD-251" />
+      <node id="CPD-204" label="CPD-204" />
+      <node id="CPD-229" label="CPD-229" />
+      <node id="CPD-501" label="CPD-501" />
+      <node id="UDP-D-GALACTURONATE" label="UDP-D-GALACTURONATE" />
+      <node id="CPD-510" label="CPD-510" />
+      <node id="UDP-GLUCURONATE" label="UDP-GLUCURONATE" />
+      <node id="D-Glucopyranuronate" label="D-Glucopyranuronate" />
+      <node id="MYO-INOSITOL" label="MYO-INOSITOL" />
+      <node id="MALTOSE" label="MALTOSE" />
+      <node id="GLC" label="GLC" />
+      <node id="SUCROSE-6P" label="SUCROSE-6P" />
+      <node id="1-4-alpha-D-galacturonosyl" label="1-4-alpha-D-galacturonosyl" />
+      <node id="Methyl-esterified-homogalacturonan" label="Methyl-esterified-homogalacturonan" />
+      <node id="|Long-Chain-Aldehydes|" label="|Long-Chain-Aldehydes|" />
+      <node id="|Long-Chain-Alkanes|" label="|Long-Chain-Alkanes|" />
+      <node id="ETOH" label="ETOH" />
+      <node id="ACETALD" label="ACETALD" />
+      <node id="UDP-D-XYLOSE" label="UDP-D-XYLOSE" />
+      <node id="1-4-beta-Xylan" label="1-4-beta-Xylan" />
+      <node id="GLUCURONOXYLAN-D-GLUCURONATE" label="GLUCURONOXYLAN-D-GLUCURONATE" />
+      <node id="Arabinoxylan" label="Arabinoxylan" />
+      <node id="L-DEHYDRO-ASCORBATE" label="L-DEHYDRO-ASCORBATE" />
+      <node id="ASCORBATE" label="ASCORBATE" />
+      <node id="CPD-318" label="CPD-318" />
+      <node id="GLUTATHIONE" label="GLUTATHIONE" />
+      <node id="Red-Glutaredoxins" label="Red-Glutaredoxins" />
+      <node id="OXIDIZED-GLUTATHIONE" label="OXIDIZED-GLUTATHIONE" />
+      <node id="CPD-603" label="CPD-603" />
+      <node id="D-glucopyranose-6-phosphate" label="D-glucopyranose-6-phosphate" />
+      <node id="GLC-1-P" label="GLC-1-P" />
+      <node id="ADP-D-GLUCOSE" label="ADP-D-GLUCOSE" />
+      <node id="Alpha-Amyloses" label="Alpha-Amyloses" />
+      <node id="1-4-alpha-D-Glucan" label="1-4-alpha-D-Glucan" />
+      <node id="CPD-7043" label="CPD-7043" />
+      <node id="Alpha-6-alpha-14-glucans" label="Alpha-6-alpha-14-glucans" />
+      <node id="Starch" label="Starch" />
+      <node id="DIACYLGLYCEROL" label="DIACYLGLYCEROL" />
+      <node id="Triacylglycerols" label="Triacylglycerols" />
+      <node id="THYMIDINE" label="THYMIDINE" />
+      <node id="TMP" label="TMP" />
+      <node id="DUMP" label="DUMP" />
+      <node id="DEOXYCYTIDINE" label="DEOXYCYTIDINE" />
+      <node id="DEOXYURIDINE" label="DEOXYURIDINE" />
+      <node id="DCMP" label="DCMP" />
+    </nodes>
+    <edges>
+      <edge source="Pyruvate-dehydrogenase-acetylDHlipoyl" target="Pyruvate-dehydrogenase-dihydrolipoate" id="0" />
+      <edge source="Pyruvate-dehydrogenase-acetylDHlipoyl" target="ACETYL-COA" id="1" />
+      <edge source="Pyruvate-dehydrogenase-dihydrolipoate" target="Pyruvate-dehydrogenase-lipoate" id="2" />
+      <edge source="ACETYL-COA" target="CIT" id="3" />
+      <edge source="GLT" target="GLN" id="4" />
+      <edge source="GLN" target="GLT" id="5" />
+      <edge source="GLN" target="CTP" id="6" />
+      <edge source="AMMONIUM" target="GLN" id="7" />
+      <edge source="L-1-PHOSPHATIDYL-ETHANOLAMINE" target="L-1-PHOSPHATIDYL-SERINE" id="8" />
+      <edge source="CDP-ETHANOLAMINE" target="L-1-PHOSPHATIDYL-ETHANOLAMINE" id="9" />
+      <edge source="CDP-CHOLINE" target="PHOSPHATIDYLCHOLINE" id="10" />
+      <edge source="PHOSPHATIDYLCHOLINE" target="CHOLINE" id="11" />
+      <edge source="PHOSPHORYL-CHOLINE" target="CDP-CHOLINE" id="12" />
+      <edge source="CHOLINE" target="PHOSPHORYL-CHOLINE" id="13" />
+      <edge source="PHOSPHORYL-ETHANOLAMINE" target="CDP-ETHANOLAMINE" id="14" />
+      <edge source="ETHANOL-AMINE" target="PHOSPHORYL-ETHANOLAMINE" id="15" />
+      <edge source="CDPDIACYLGLYCEROL" target="L-1-PHOSPHATIDYL-SERINE" id="16" />
+      <edge source="CDPDIACYLGLYCEROL" target="L-1-phosphatidyl-inositols" id="17" />
+      <edge source="CDPDIACYLGLYCEROL" target="L-1-PHOSPHATIDYL-GLYCEROL-P" id="18" />
+      <edge source="L-PHOSPHATIDATE" target="CDPDIACYLGLYCEROL" id="19" />
+      <edge source="ACYL-SN-GLYCEROL-3P" target="L-PHOSPHATIDATE" id="20" />
+      <edge source="GLYCEROL-3P" target="ACYL-SN-GLYCEROL-3P" id="21" />
+      <edge source="CPD-14741" target="CPD-17616" id="22" />
+      <edge source="CPD-17616" target="CPD-3942" id="23" />
+      <edge source="CPD-3942" target="CPD-3944" id="24" />
+      <edge source="CPD-3631" target="CPD-4462" id="25" />
+      <edge source="CPD-4462" target="CPD-3942" id="26" />
+      <edge source="L-1-PHOSPHATIDYL-GLYCEROL-P" target="L-1-PHOSPHATIDYL-GLYCEROL" id="27" />
+      <edge source="MALONATE" target="MALONYL-ACP" id="28" />
+      <edge source="MALONATE" target="MALONYL-COA" id="29" />
+      <edge source="MALONYL-COA" target="MALONYL-ACP" id="30" />
+      <edge source="1-4-beta-D-Glucan" target="GXGG-Xyloglucans" id="31" />
+      <edge source="Xyloglucans-Galactose-23" target="XLFG-Xyloglucans" id="32" />
+      <edge source="Xyloglucans-Galactose-3" target="Xyloglucans-Galactose-23" id="33" />
+      <edge source="Xyloglucans-Xylose" target="Xyloglucans-Galactose-3" id="34" />
+      <edge source="ARG" target="AGMATHINE" id="35" />
+      <edge source="ARG" target="L-ORNITHINE" id="36" />
+      <edge source="AGMATHINE" target="PUTRESCINE" id="37" />
+      <edge source="SUCROSE" target="BETA-D-FRUCTOSE" id="38" />
+      <edge source="SUCROSE" target="CPD-12575" id="39" />
+      <edge source="CPD-12575" target="SUCROSE-6P" id="40" />
+      <edge source="UDP" target="DUDP" id="41" />
+      <edge source="CDP" target="DCDP" id="42" />
+      <edge source="UTP" target="CTP" id="43" />
+      <edge source="UTP" target="UMP" id="44" />
+      <edge source="CARBAMOYL-P" target="CARBAMYUL-L-ASPARTATE" id="45" />
+      <edge source="L-ASPARTATE" target="CARBAMYUL-L-ASPARTATE" id="46" />
+      <edge source="CPD1F-90" target="CPD1F-453" id="47" />
+      <edge source="CPD1F-453" target="CPD-8067" id="48" />
+      <edge source="CPD-8068" target="CPD-8069" id="49" />
+      <edge source="CPD-8067" target="CPD-8068" id="50" />
+      <edge source="CPD-14849" target="CPD-14850" id="51" />
+      <edge source="CPD1F-437" target="CPD-14849" id="52" />
+      <edge source="CPD-520" target="CPD1F-437" id="53" />
+      <edge source="CPD1F-95" target="CPD-6228" id="54" />
+      <edge source="CPD1F-95" target="CPD1F-97" id="55" />
+      <edge source="CPD1F-95" target="CPD-695" id="56" />
+      <edge source="CPD1F-95" target="CPD-475" id="57" />
+      <edge source="CPD-6228" target="CPD-6202" id="58" />
+      <edge source="CPD-6202" target="CPD-6201" id="59" />
+      <edge source="CPD1F-97" target="CPD1F-120" id="60" />
+      <edge source="CPD1F-97" target="CPD-6202" id="61" />
+      <edge source="CPD1F-120" target="CPD1F-134" id="62" />
+      <edge source="CPD1F-120" target="CPD1F-84" id="63" />
+      <edge source="CPD1F-120" target="CPD-6201" id="64" />
+      <edge source="CPD1F-134" target="CPD1F-137" id="65" />
+      <edge source="CPD1F-134" target="CPD-482" id="66" />
+      <edge source="CPD1F-84" target="CPD-6221" id="67" />
+      <edge source="CPD-695" target="CPD-638" id="68" />
+      <edge source="CPD-695" target="CPD-477" id="69" />
+      <edge source="CPD1F-138" target="CPD1F-95" id="70" />
+      <edge source="CPD1F-136" target="CPD1F-138" id="71" />
+      <edge source="CPD1F-132" target="CPD1F-136" id="72" />
+      <edge source="ENT-KAUR-16-EN-19-AL" target="CPD1F-132" id="73" />
+      <edge source="ENT-KAUR-16-EN-19-OL" target="ENT-KAUR-16-EN-19-AL" id="74" />
+      <edge source="CPD1F-128" target="ENT-KAUR-16-EN-19-OL" id="75" />
+      <edge source="CPD-10332" target="CPD-6203" id="76" />
+      <edge source="CPD1F-96" target="CPD1F-86" id="77" />
+      <edge source="CPD1F-96" target="CPD1F-140" id="78" />
+      <edge source="CPD1F-140" target="CPD1F-139" id="79" />
+      <edge source="CPD1F-140" target="CPD-236" id="80" />
+      <edge source="CPD1F-139" target="CPD-204" id="81" />
+      <edge source="CPD-638" target="CPD-885" id="82" />
+      <edge source="CPD1F-137" target="CPD-6224" id="83" />
+      <edge source="CPD-13909" target="CPD-678" id="84" />
+      <edge source="CPD-678" target="L-SELENOCYSTEINE" id="85" />
+      <edge source="CPD-13713" target="SELENITE" id="86" />
+      <edge source="SELENATE" target="CPD-13713" id="87" />
+      <edge source="2-OXOSUCCINAMATE" target="OXALACETIC_ACID" id="88" />
+      <edge source="2-OXOSUCCINAMATE" target="2-HYDROXYSUCCINAMATE" id="89" />
+      <edge source="OXALACETIC_ACID" target="CIT" id="90" />
+      <edge source="ASN" target="2-OXOSUCCINAMATE" id="91" />
+      <edge source="NIACINE" target="METHYLNICOTINATE" id="92" />
+      <edge source="URACIL" target="ISOWILLARDIINE" id="93" />
+      <edge source="URACIL" target="3-URACIL-1-YL-L-SERINE" id="94" />
+      <edge source="5-METHYL-THF-GLU-N" target="THF-GLU-N" id="95" />
+      <edge source="THF-GLU-N" target="THF-GLU-N" id="96" />
+      <edge source="THF-GLU-N" target="METHYLENE-THF-GLU-N" id="97" />
+      <edge source="5-10-METHENYL-THF-GLU-N" target="N5-Formyl-THF-Glu-N" id="98" />
+      <edge source="5-10-METHENYL-THF-GLU-N" target="FORMYL-THF-GLU-N" id="99" />
+      <edge source="N5-Formyl-THF-Glu-N" target="5-10-METHENYL-THF-GLU-N" id="100" />
+      <edge source="METHYLENE-THF-GLU-N" target="DIHYDROFOLATE-GLU-N" id="101" />
+      <edge source="METHYLENE-THF-GLU-N" target="5-METHYL-THF-GLU-N" id="102" />
+      <edge source="METHYLENE-THF-GLU-N" target="5-10-METHENYL-THF-GLU-N" id="103" />
+      <edge source="DIHYDROFOLATE-GLU-N" target="THF-GLU-N" id="104" />
+      <edge source="MAL" target="OXALACETIC_ACID" id="105" />
+      <edge source="FUM" target="MAL" id="106" />
+      <edge source="SUC-COA" target="SUC" id="107" />
+      <edge source="2-KETOGLUTARATE" target="SUC-COA" id="108" />
+      <edge source="CIS-ACONITATE" target="THREO-DS-ISO-CITRATE" id="109" />
+      <edge source="CIT" target="CIS-ACONITATE" id="110" />
+      <edge source="FRUCTOSE-6P" target="FRUCTOSE-16-DIPHOSPHATE" id="111" />
+      <edge source="FRUCTOSE-6P" target="SUCROSE-6P" id="112" />
+      <edge source="FRUCTOSE-16-DIPHOSPHATE" target="GAP" id="113" />
+      <edge source="FRUCTOSE-16-DIPHOSPHATE" target="DIHYDROXY-ACETONE-PHOSPHATE" id="114" />
+      <edge source="GAP" target="DPG" id="115" />
+      <edge source="GAP" target="G3P" id="116" />
+      <edge source="DIHYDROXY-ACETONE-PHOSPHATE" target="GAP" id="117" />
+      <edge source="DPG" target="G3P" id="118" />
+      <edge source="G3P" target="2-PG" id="119" />
+      <edge source="2-PG" target="PHOSPHO-ENOL-PYRUVATE" id="120" />
+      <edge source="PHOSPHO-ENOL-PYRUVATE" target="PYRUVATE" id="121" />
+      <edge source="CPD-8065" target="CPD-8066" id="122" />
+      <edge source="CPD-170" target="CPD-8065" id="123" />
+      <edge source="CPD-1099" target="CPD-170" id="124" />
+      <edge source="CPD-458" target="CPD-1099" id="125" />
+      <edge source="CPD-14553" target="CPD-458" id="126" />
+      <edge source="CPD-13717" target="SELENOHOMOCYSTEINE" id="127" />
+      <edge source="MALONATE-S-ALD" target="B-ALANINE" id="128" />
+      <edge source="PROPIONATE" target="PROPIONYL-COA" id="129" />
+      <edge source="PROPIONYL-COA" target="ACRYLYL-COA" id="130" />
+      <edge source="3-HYDROXY-PROPIONYL-COA" target="3-HYDROXY-PROPIONATE" id="131" />
+      <edge source="3-HYDROXY-PROPIONATE" target="MALONATE-S-ALD" id="132" />
+      <edge source="ACRYLYL-COA" target="3-HYDROXY-PROPIONYL-COA" id="133" />
+      <edge source="CPD-6224" target="CPD-632" id="134" />
+      <edge source="CPD-482" target="CPD-498" id="135" />
+      <edge source="CPD-236" target="CPD-251" id="136" />
+      <edge source="CPD-204" target="CPD-229" id="137" />
+      <edge source="CPD-501" target="UDP-D-GALACTURONATE" id="138" />
+      <edge source="CPD-510" target="UDP-GLUCURONATE" id="139" />
+      <edge source="D-Glucopyranuronate" target="CPD-510" id="140" />
+      <edge source="MYO-INOSITOL" target="D-Glucopyranuronate" id="141" />
+      <edge source="MALTOSE" target="GLC" id="142" />
+      <edge source="1-4-alpha-D-galacturonosyl" target="Methyl-esterified-homogalacturonan" id="143" />
+      <edge source="|Long-Chain-Aldehydes|" target="|Long-Chain-Alkanes|" id="144" />
+      <edge source="ETOH" target="ACETALD" id="145" />
+      <edge source="UDP-D-XYLOSE" target="1-4-beta-Xylan" id="146" />
+      <edge source="1-4-beta-Xylan" target="1-4-beta-Xylan" id="147" />
+      <edge source="1-4-beta-Xylan" target="GLUCURONOXYLAN-D-GLUCURONATE" id="148" />
+      <edge source="1-4-beta-Xylan" target="Arabinoxylan" id="149" />
+      <edge source="L-DEHYDRO-ASCORBATE" target="ASCORBATE" id="150" />
+      <edge source="ASCORBATE" target="CPD-318" id="151" />
+      <edge source="CPD-318" target="L-DEHYDRO-ASCORBATE" id="152" />
+      <edge source="CPD-318" target="ASCORBATE" id="153" />
+      <edge source="GLUTATHIONE" target="Red-Glutaredoxins" id="154" />
+      <edge source="GLUTATHIONE" target="OXIDIZED-GLUTATHIONE" id="155" />
+      <edge source="OXIDIZED-GLUTATHIONE" target="GLUTATHIONE" id="156" />
+      <edge source="CPD-603" target="L-ASPARTATE" id="157" />
+      <edge source="D-glucopyranose-6-phosphate" target="GLC-1-P" id="158" />
+      <edge source="ADP-D-GLUCOSE" target="Alpha-Amyloses" id="159" />
+      <edge source="ADP-D-GLUCOSE" target="1-4-alpha-D-Glucan" id="160" />
+      <edge source="Alpha-Amyloses" target="CPD-7043" id="161" />
+      <edge source="Alpha-Amyloses" target="Starch" id="162" />
+      <edge source="1-4-alpha-D-Glucan" target="Alpha-Amyloses" id="163" />
+      <edge source="1-4-alpha-D-Glucan" target="1-4-alpha-D-Glucan" id="164" />
+      <edge source="CPD-7043" target="Starch" id="165" />
+      <edge source="Alpha-6-alpha-14-glucans" target="CPD-7043" id="166" />
+      <edge source="Alpha-6-alpha-14-glucans" target="Alpha-6-alpha-14-glucans" id="167" />
+      <edge source="DIACYLGLYCEROL" target="L-PHOSPHATIDATE" id="168" />
+      <edge source="DIACYLGLYCEROL" target="Triacylglycerols" id="169" />
+      <edge source="THYMIDINE" target="TMP" id="170" />
+      <edge source="DUMP" target="TMP" id="171" />
+      <edge source="DEOXYCYTIDINE" target="DEOXYURIDINE" id="172" />
+      <edge source="DEOXYCYTIDINE" target="DCMP" id="173" />
+      <edge source="DEOXYURIDINE" target="DUMP" id="174" />
+    </edges>
+  </graph>
+</gexf>
