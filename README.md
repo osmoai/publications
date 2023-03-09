@@ -1,6 +1,6 @@
 # Osmo Publications
 
-This repository contains related code and data for publications released by [Osmo](https://http://osmo.ai/).
+This repository contains related code and data for publications released by [Osmo](https://osmo.ai/).
 
 All datasets in this repository are released under the CC BY 4.0 International
 license, which can be found here:
