@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Iterable, Union
 
-from qian_et_al_2023.src import base
+from lee_et_al_2023.src import base
 
 
 def load_gnn_rf_predictions(mol_codes):

@@ -4,7 +4,7 @@ import random
 import numpy as np
 import pandas as pd
 
-from qian_et_al_2023.src import base
+from lee_et_al_2023.src import base
 
 def center_model(model):
     """Center a model."""
