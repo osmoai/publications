@@ -1,0 +1,52 @@
+"""Pseudocode for overall GNN architecture to accompany the detailed description of the models and hyper-parameters. The model training and implemetnation code can be made available upon request."""
+
+class Model:
+  def __init__(self,
+               atom_hidden_size,
+               conv_message_size,
+               conv_num_mp_layers,
+               conv_layernorm,
+               conv_dropout,
+               fp_embedding_size,
+               fp_activation,
+               fp_layernorm,
+               fp_dropout,
+               fp_pool_type,
+               net_layer_sizes,
+               net_activation,
+               net_batchnorm,
+               net_batchnorm_eps,
+               net_batchnorm_decay_rate,
+               net_dropout,
+               num_output_classes,
+               final_activation):
+    super(Model, self).__init__()
+    self.atom_embedding_layer = AtomDense(
+        atom_hidden_size=atom_hidden_size)
+    self.mpnn = MPNN(
+        message_size=conv_message_size,
+        num_mp_layers=conv_num_mp_layers,
+        layernorm=conv_layernorm,
+        dropout=conv_dropout)
+    self.graph_embedder = GraphEmbedder(
+        layernorm=fp_layernorm,
+        dropout=fp_dropout,
+        embedding_size=fp_embedding_size,
+        activation=fp_activation,
+        molecule_pool_type=fp_pool_type
+    self.dense_block = MLP(
+        net_layer_sizes,
+        activation=net_activation,
+        batchnorm=net_batchnorm,
+        batchnorm_eps=net_batchnorm_eps,
+        batchnorm_decay_rate=net_batchnorm_decay_rate,
+        dropout=net_dropout,
+        activate_final=True)
+    self.final_layer = Sequential([Linear(num_output_classes), final_activation])
+    
+  def __call__(self, graph):
+    initial_atom_embedding = self.atom_embedding_layer(graph)
+    mpnn_output = self.mpnn(initial_atom_embedding)
+    graph_embedding = self.graph_embedder(mpnn_output)
+    final_embedding = self.dense_block(graph_embedding)
+    return self.final_layer(final_embedding)
