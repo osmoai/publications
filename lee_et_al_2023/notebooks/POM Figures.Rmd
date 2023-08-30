@@ -1,0 +1,938 @@
+---
+title: "A Principal Odor Map Unifies Diverse Tasks in Olfactory Perception"
+author: "Brian K. Lee†, Emily J. Mayhew†, Benjamin Sanchez-Lengeling, Jennifer N. Wei, Wesley Qian, Kelsie Little, Matthew Andres, Britney B. Nguyen, Theresa Moloy, Jane Parker, Richard C. Gerkin, Joel D. Mainland, Alex Wiltschko"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_height: 4.5
+    fig_width: 7
+    highlight: tango
+    number_sections: yes
+    theme: cosmo
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introduction to Contents
+
+This markdown generates figures for the manuscript "A Principal Odor Map Unifies Diverse Tasks in Olfactory Perception" using the supplemental datasets made publicly available upon publication.
+
+DOI:
+
+# Code to Generate Figures
+
+## Table-setting
+
+### Load packages
+```{r}
+pacman::p_load(tidyverse, #data cleaning, reshaping, and plotting
+               waffle, #make waffle plots
+               cowplot, #stitch plots together
+               ggbreak, #include axis breaks in plots
+               RColorBrewer, #color palettes
+               viridis, #color palettes
+               svglite ) #save .svg files
+```
+
+
+### Read in datasets
+```{r}
+#Metadata for 400 molecules comprising the prospective validation dataset
+S1 <- read.csv("Resubmission/Data S1.csv") %>%
+  rename("8.atoms.or.fewer" = "X..8.atoms...25.ile.",
+          "13.atoms.or.more" = "X..13.atoms...75.ile.",
+          "Alkyl.4.carbon.chain" = "Alkyl")%>%
+  #replace NA with empty cell
+  mutate_all(~replace(., is.na(.), ""))%>%
+  mutate(RedJade.Code = as.numeric(RedJade.Code))
+
+#Panelist evaluations of 400 novel odorants
+S3 <- read.csv("Resubmission/Data S3.csv")
+
+#Odor attribute predictions on 400 molecules by a random forest model trained on GS/LF datasets
+S4 <- read.csv("Resubmission/Data S4.csv")
+
+#Odor attribute predictions on 400 molecules by a graph neural network model trained on GS/LF datasets. Final layer.
+S5 <- read.csv("Resubmission/Data S5.csv")
+
+#Graph neural network embeddings on 400 molecules. Penultimate layer.
+S6 <- read.csv("Resubmission/Data S6.csv")
+
+#Correspondence table between internal odorant identifiers and chemical structures
+S7 <- read.csv("Data S7.csv")
+```
+
+
+## Figure 1B
+The GNN was trained on a curated dataset of ~5000 semantically labeled molecules drawn from GoodScents (13) and Leffingwell (14) flavor and fragrance databases; one square represents 100 molecules.
+```{r, message=F, warning=F}
+#create df with database sizes
+traindata <- c(GoodScents = 37.86 - 23.17, Both = 23.17, Leffingwell = 35.61 - 23.17)
+
+#generate waffle plot
+waffle(traindata, rows = 10, flip = T, legend_pos = "bottom", size = 1, reverse = T)
+
+#remove df from environment
+rm(traindata)
+```
+
+
+## Figure 2A-D
+(A) GNN model label predictions, (B) random forest (RF) model label predictions, (C) panel mean ratings with standard error bars, and (D) individual panelist ratings, averaged over 2 replicates, for the molecule 2,3-dihydrobenzofuran-5-carboxaldehyde. In panels A-C, the top 5 ranked descriptors are in orange (GNN), purple (RF), or green (panel). Descriptors in panels A-D are ordered by panel mean ratings. Panels A, B, and D are annotated with the Pearson correlation coefficient of their data to the panel mean rating shown in panel C. Panel D includes panelist/panel correlation coefficients for the panelist that best matches the panel mean and for the panelist with the median match.
+```{r, message=F, warning=F}
+#normalize data by subtracting from each raw rating that subject's mean rating for the given descriptor
+RATA_normalize <- S3 %>%
+  group_by(SubjectCode)%>%
+  summarise_at(vars(Green:Fishy), mean) %>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "SubjectMean")
+
+RATA_normalized <-  S3 %>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Value")%>%
+  left_join(., RATA_normalize)%>%
+  mutate(normValue = Value - SubjectMean)
+```
+
+```{r, message=F, warning=F}
+#Calculate subject correlation to group mean
+
+#correlation to mean ratings - removing evaluation to calculate mean
+ChemCor <- RATA_normalized %>%
+  select(SubjectCode, Rep, SampleIdentifier, Descriptor, normValue)
+
+df <- ChemCor %>% filter(SubjectCode != unique(S3$SubjectCode)[1]) %>%
+  group_by(SampleIdentifier, Descriptor) %>%
+  summarize(GroupMean = mean(normValue)) 
+
+df2 <- ChemCor %>% filter(SubjectCode == unique(S3$SubjectCode)[1]) %>%
+  select(SampleIdentifier, Descriptor, SubjectCode, Rep, normValue) %>%
+  left_join(df)
+
+results <- df2 
+
+for(i in 2:length(unique(S3$SubjectCode))){
+  df <- ChemCor %>% filter(SubjectCode != unique(S3$SubjectCode)[i]) %>%
+    group_by(SampleIdentifier, Descriptor) %>%
+    summarize(GroupMean = mean(normValue)) 
+  
+  df2 <- ChemCor %>% filter(SubjectCode == unique(S3$SubjectCode)[i]) %>%
+    select(SampleIdentifier, Descriptor, SubjectCode, Rep, normValue) %>%
+    left_join(df)
+  
+  results <- bind_rows(results, df2)
+}
+ChemCor2 <- results %>%
+  group_by(SubjectCode, Rep, SampleIdentifier)%>%
+  summarise(corP = cor(normValue, GroupMean))
+
+#clean up environment
+rm(df, df2, ChemCor, RATA_normalize)
+```
+
+```{r, message=F, warning=F}
+#pick an example molecule
+sampleID <- 380 
+
+#now using color brewer palette 2
+palette <- brewer.pal(n=4, "Set2")
+#order: green - people, orange - gnn, purple - rf, pink - other
+
+#calculate correlation of subject ratings to group mean for chosen molecule
+cor_subj <- ChemCor2 %>%
+  filter(SampleIdentifier == sampleID) %>%
+  group_by(SubjectCode) %>%
+  summarise(corP = mean(corP)) %>%
+  mutate(SubjectCode = reorder(SubjectCode, corP, FUN = mean))
+```
+
+
+```{r, message=F, warning=F}
+#make new df with mean ratings, GNN predictions, and RF predictions
+
+#summarize to mean values
+RATA.meanVal <- S3 %>% 
+  select(-"StartTime.UTC.", -Intensity, -Pleasantness, -NoOdor )%>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Value") %>%
+  group_by(SampleIdentifier, Descriptor) %>%
+  summarise(MeanRating = mean(Value),
+            num = n(),
+            stdev = sd(Value),
+            se = stdev/sqrt(num))
+
+#make dataframes long
+gnnP_long <- S5 %>%
+  pivot_longer(-RedJade.Code, names_to = "Descriptor", values_to = "GNNprediction")%>%
+  rename(SampleIdentifier = RedJade.Code)%>%
+  mutate(SampleIdentifier = as.numeric(SampleIdentifier))
+
+rf_long <- S4 %>%
+  pivot_longer(-RedJade.Code, names_to = "Descriptor", values_to = "RFprediction")%>%
+  rename(SampleIdentifier = RedJade.Code)%>%
+  mutate(SampleIdentifier = as.numeric(SampleIdentifier))
+
+
+#merge gnn, rf, and rata ratings
+ratings.gnn <- left_join(RATA.meanVal, gnnP_long)%>%
+  left_join(., rf_long) %>%
+  group_by(SampleIdentifier)%>%
+  mutate(gnnRank = rank(GNNprediction),
+         rfRank = rank(RFprediction),
+         rataRank = rank(MeanRating),
+         gnnTop5 = ifelse(gnnRank > 50, "yes", "no"),
+         rfTop5 = ifelse(rfRank > 50, "yes", "no"),
+         rataTop5 = ifelse(rataRank > 50, "yes", "no"))
+
+#clean up environment
+rm(RATA.meanVal, gnnP_long, rf_long)
+```
+
+
+```{r, message=F, warning=F}
+#make RF part of the figure
+rffig <-   ratings.gnn %>%
+  mutate(rfTop5 = factor(rfTop5,
+                          levels = c("yes", "no")))%>%
+  filter(SampleIdentifier == sampleID) %>%
+  ggplot( aes( reorder(Descriptor, -MeanRating), RFprediction, fill = rfTop5))+
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c(palette[3], "gray"),
+                    labels = c("Top 5 predicted labels", "All other labels"))+
+  theme_classic()+
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        legend.position = c(0.9, 0.8),
+        legend.title = element_blank())+
+  ylim(0, 1)+
+  ylab("RF \np(label applies)")
+```
+
+```{r, message=F, warning=F}
+#make GNN part of the figure
+gnnfig <-   ratings.gnn %>%
+  mutate(gnnTop5 = factor(gnnTop5,
+                          levels = c("yes", "no")))%>%
+  filter(SampleIdentifier == sampleID) %>%
+  ggplot( aes( reorder(Descriptor, -MeanRating), GNNprediction, fill = gnnTop5))+
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c(palette[2], "gray"),
+                    labels = c("Top 5 predicted labels", "All other labels"))+
+  theme_classic()+
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        legend.position = c(0.9, 0.8),
+        legend.title = element_blank())+
+  ylim(0, 1)+
+  ylab("GNN \np(label applies)")
+```
+
+```{r, message=F, warning=F}
+#make rata part of the figure
+ratafig <- ratings.gnn %>%
+  mutate(rataTop5 = factor(rataTop5,
+                           levels = c("yes", "no")))%>%
+  filter(SampleIdentifier == sampleID) %>%
+  ggplot( aes( reorder(Descriptor, -MeanRating), MeanRating, fill = rataTop5))+
+  geom_bar(stat = "identity")+
+  geom_errorbar( aes(ymin = MeanRating - se, ymax = MeanRating + se))+
+  scale_fill_manual(values = c(palette[1], "gray"),
+                    labels = c("Top 5 rated labels", "All other labels"))+
+  theme_classic()+
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        legend.position = c(0.88, 0.8),
+        legend.title = element_blank())+
+  ylab("Panel mean rating")
+```
+
+```{r, message=F, warning=F}
+#raster plot of raw ratings
+
+#stack descriptors for easy plotting
+RATA.long <- S3 %>%
+  select(-1, -Intensity, -Pleasantness, -NoOdor)%>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Value")
+
+#raw data plot
+raster <- RATA.long %>%
+  filter(SampleIdentifier == sampleID) %>%
+  group_by(Descriptor)%>%
+  mutate(MeanRating = mean(Value))%>%
+  rename(Rating = Value)%>%
+  left_join(., cor_subj)%>%
+  ggplot( aes(reorder(SubjectCode, corP), reorder(Descriptor, -MeanRating), fill = Rating))+
+  geom_raster() +
+  coord_flip()+
+  xlab("Panelists")+
+  scale_fill_distiller(type = "seq", direction = 1, palette = 2) +
+  theme(legend.position = c(0.95, 0.55),
+        legend.key.height = unit(0.45, 'cm'),
+        legend.text = element_text(size = 8),
+        axis.text.x = element_text(size=9, angle = 60, hjust = 1),
+        axis.title.x = element_blank(), 
+        axis.text.y = element_text(size = 6))
+```
+
+
+```{r, message=F, warning=F}
+#put subplots together
+plot_grid( gnnfig, NULL, rffig, NULL, ratafig, NULL, raster, ncol = 1, align = c("hv"), 
+           rel_heights = c(.6, -0.22, 0.6, -0.22, 0.6, -0.22, 0.7))
+
+#clean up 
+rm(rffig, gnnfig, ratafig, raster)
+```
+
+
+## Figure 2F
+(F) Difference in the median correlation to the panel mean relative to the median human subject’s correlation to the panel mean for models trained using k-nearest neighbor (KNN) and RF, trained on cFPs or Mordred features, and the GNN model. Only the GNN model has a median correlation to the panel mean that is higher than that of the median panelist. 
+```{r, message=F, warning=F}
+#plot just RF and GNN relative to human baseline
+
+#make df with median correlation coefficients to panel mean (calculations done in other script)
+#these values from Brian, updated as of 3/24/2023
+OTT <- tibble(Human = 0.207,
+                  GNN = 0.242,
+                  RF_cFP = 0.176,
+                  RF_Mordred = 0.187,
+                  KNN_cFP = 0.127,
+                  KNN_Mordred = 0.148,
+                  GNN_shuffled = -0.045803) %>% #no updated value given
+  pivot_longer(Human:GNN_shuffled, names_to = "Model", values_to = "MedianCorrelation") %>%
+  mutate(PerformanceDelta = MedianCorrelation - 0.210246) #compare all corr to human baseline 
+  
+#make barplot with broken axis
+OTT %>%
+  filter(! Model %in% c("Human", "RF", "GNN_retrained"))%>%
+  ggplot( aes(fct_reorder(Model, PerformanceDelta, mean), PerformanceDelta, fill = Model))+
+  geom_col()+
+  geom_hline(yintercept = 0)+
+  theme_classic()+
+  scale_fill_manual(values = c( "#fc8d62", "#b3b3b3", 
+                                "#E62C8B", "#E62C8B","#8da0cb", "#8da0cb"))+
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        text = element_text(size = 8),
+        axis.text.x = element_text(angle = 30, hjust = 1))+
+  ylim(-0.3, 0.05)+
+  scale_y_break(c(-0.2, -0.1))+
+  ylab("Difference in Median Correlation \nRelative to Human Baseline")
+
+
+#save figure output
+ggsave("Resubmission/Final Figures/Figure 2 panels/MulticomparisonOTTbarplot.svg", height = 3, width = 3.2)
+
+#remove df from environment
+rm(OTT)
+```
+
+
+## Figure 3A
+(A) Correlation of GNN (in orange) and RF (in purple) model predictions and panelist ratings (in gray) to the panel mean for each of the 55 odor labels. 
+```{r, message=F, warning=F}
+#calculate normalized mean RATA ratings
+RATA_normMeans <-  RATA_normalized %>%
+  group_by(SampleIdentifier, Descriptor)%>%
+  summarise(meanRating = mean(normValue))%>%
+  rename(RedJade.Code = SampleIdentifier)
+
+#normalize predictions
+GNN_normalize <- S5 %>%
+  summarise_at(vars(Green:Fishy), mean) %>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Mean")
+
+RF_normalize <- S4 %>%
+  summarise_at(vars(Green:Fishy), mean) %>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Mean")
+
+#make long, normalize
+gnnNorm_long <- S5 %>%
+  pivot_longer(-RedJade.Code, names_to = "Descriptor", values_to = "GNNprediction")%>%
+  left_join(., GNN_normalize)%>%
+  mutate(nGNN = GNNprediction - Mean)%>%
+  mutate(RedJade.Code = as.numeric(RedJade.Code))%>%
+  select(RedJade.Code, Descriptor, nGNN)
+  
+rfNorm_long <- S4 %>%
+  pivot_longer(-RedJade.Code, names_to = "Descriptor", values_to = "RFprediction")%>%
+  left_join(., RF_normalize)%>%
+  mutate(nRF = RFprediction - Mean)%>%
+  mutate(RedJade.Code = as.numeric(RedJade.Code))%>%
+  select(RedJade.Code, Descriptor, nRF)
+
+# #S1 is not up-to-date on dropped molecules
+# odor_key_resub <- read.csv("odor_key_resub.csv")
+
+#calculate mean model correlations
+ModelCor <- RATA_normMeans %>%
+  #left_join(., odor_key_resub)%>%
+  left_join(., S1) %>%
+  left_join(., gnnNorm_long) %>%
+  left_join(., rfNorm_long) %>%
+  filter(Disqualification.reason == "") %>%
+  drop_na()%>%
+  group_by(Descriptor)%>%
+  summarise(corGNN = cor(nGNN, meanRating),
+            corRF = cor(nRF, meanRating))
+
+ #calculate mean subject correlations, merge with model correlations 
+LabelCor <- results %>%
+  rename(RedJade.Code = SampleIdentifier)%>%
+  #left_join(., odor_key_resub)%>%
+  left_join(., S1) %>%
+  filter(Disqualification.reason == "") %>%
+  drop_na()%>%
+  group_by(SubjectCode, Rep, Descriptor)%>%
+  summarise(corP = cor(normValue, GroupMean))%>%
+  drop_na()%>%
+  left_join(ModelCor)
+
+
+##### Label figure ########
+
+min(LabelCor$corP)
+max(LabelCor$corP)
+
+LabelCor %>%
+  ggplot( aes(corP, reorder(Descriptor, corGNN))) +
+  geom_boxplot(outlier.alpha = 0, color = "lightgray")+
+  geom_point(alpha = 0.05)+ 
+  geom_point( aes(corGNN, Descriptor), color = palette[2], size = 2.5)+
+  geom_point( aes(corRF, Descriptor), color = palette[3], shape = 18, size = 2.5)+ #matches barcode plot orange
+  theme_classic()+
+  xlim(-0.13, 0.92)+
+  xlab("Correlation to Panel Mean")+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size=8))
+
+
+### save figure
+ggsave("Resubmission/Final Figures/Figure 3 panels/Disagg_Label_resub.svg", height = 7, width = 3.5)
+
+```
+
+```{r}
+#pull some accompanying stats
+df1 <- LabelCor %>%
+  group_by(Descriptor) %>%
+  summarise(GNNinDist = case_when(corGNN > min(corP) ~ "yes",
+                               TRUE ~ "no"),
+         RFinDist = case_when(corRF > min(corP) ~ "yes",
+                              TRUE ~ "no"),
+         GNNbeatsMedian = case_when(corGNN > median(corP) ~ "yes",
+                                    TRUE ~ "no"),
+         RFbeatsMedian = case_when(corRF > median(corP) ~ "yes",
+                              TRUE ~ "no"),
+         GNNbeatsRF = case_when(corGNN > corRF ~ "yes",
+                                TRUE ~ "no"))
+#GNN  
+#GNN below distribution
+df1%>%
+  unique()%>%
+  filter(GNNinDist == "no")%>%
+  select(Descriptor) # just Musk
+
+#GNN above median panelist
+df1%>%
+  unique()%>%
+  filter(GNNbeatsMedian == "yes")%>%
+  select(Descriptor) #30 labels
+30/55 #55%
+
+#RF
+#RF below distribution
+df1%>%
+  unique()%>%
+  filter(RFinDist == "no")%>%
+  select(Descriptor) # 2 - fermented, sharp
+
+#RF above median panelist
+df1%>%
+  unique()%>%
+  filter(RFbeatsMedian == "yes")%>%
+  select(Descriptor) #16 labels
+16/55 #29%
+
+
+#RF v GNN
+df1%>%
+  unique()%>%
+  filter(GNNbeatsRF == "yes")%>%
+  select(Descriptor) #46 labels
+46/55 #84%
+
+
+## RF vs GNN t-test for label performance
+label.ttest <- LabelCor %>%
+  group_by(Descriptor)%>%
+  summarise(GNNmean = mean(corGNN),
+            RFmean = mean(corRF))
+
+t.test(x=label.ttest$GNNmean, y=label.ttest$RFmean, paired = TRUE)
+#p-value = 3.349e-07
+
+```
+
+
+## Figure 3C
+(C) Mean correlation of GNN (in orange) and RF (in purple) model predictions and panelist ratings (in gray) to the panel mean for molecules belonging to 12 common chemical classes.
+
+```{r, message=F, warning=F}
+
+#calculate mean model correlations, group by molecule
+ModelCor <- RATA_normMeans %>%
+  #left_join(., odor_key_resub)%>%
+  left_join(., S1) %>%
+  left_join(., gnnNorm_long) %>%
+  left_join(., rfNorm_long) %>%
+  drop_na()%>%
+  group_by(RedJade.Code, Disqualification.reason)%>%
+  summarise(corGNN = cor(nGNN, meanRating),
+            corRF = cor(nRF, meanRating))
+
+#S1 also needs to be updated to include chemical class categorizations
+corr_class <- S1 %>% 
+  select(RedJade.Code, Sulfur:"13.atoms.or.more") %>%
+  pivot_longer(Sulfur:"13.atoms.or.more", names_to = "ChemicalClass", values_to = "Member")%>%
+  filter(Member == "TRUE")%>%
+  group_by(ChemicalClass)%>%
+  select(RedJade.Code, ChemicalClass)
+
+
+ChemCor3 <- ChemCor2 %>%
+  rename(RedJade.Code = SampleIdentifier)%>%
+  left_join(., ModelCor)%>%
+  #left_join(., S1) %>%
+  filter(Disqualification.reason == "") %>%
+  left_join(., corr_class) %>%
+  filter(!is.na(ChemicalClass))%>% #some molecules don't fit any class
+  mutate(ChemicalClass = str_replace_all(ChemicalClass, "\\.", " "))%>%
+  mutate(ChemicalClass = str_replace_all(ChemicalClass, "4 carbon", "4-carbon"))
+
+
+Disagg_chem_models <- ChemCor3 %>%
+  group_by(ChemicalClass)%>%
+  summarise(GNNmean = mean(corGNN, na.rm = T),
+         RFmean = mean(corRF, na.rm = T))%>%
+  mutate(ChemicalClass = fct_reorder(ChemicalClass, GNNmean))
+
+Disagg_chem <- ChemCor3 %>%
+  group_by(SubjectCode, ChemicalClass) %>%
+  summarise(corPsubjmean = mean(corP, na.rm = T)) %>%
+  left_join(Disagg_chem_models) %>%
+  mutate(ChemicalClass = fct_reorder(ChemicalClass, GNNmean))
+ 
+
+#plot
+min(Disagg_chem$corPsubjmean)
+max(Disagg_chem$corPsubjmean)
+
+ggplot(Disagg_chem, aes(corPsubjmean, ChemicalClass)) +
+  geom_boxplot(outlier.alpha = 0, color = "lightgray")+
+  geom_point(alpha = 0.05)+ 
+  geom_point(data = Disagg_chem_models, aes(GNNmean, ChemicalClass), color = palette[2], size = 2.5)+
+  geom_point(data = Disagg_chem_models, aes(RFmean, ChemicalClass), color = palette[3], shape = 18, size = 2.5)+ #matches barcode plot orange
+  theme_classic()+
+  xlim(-0.15, 0.92)+
+  xlab("Correlation to Panel Mean")+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_text(size=8))
+
+ggsave("Resubmission/Final Figures/Figure 3 panels/Disagg_ChemClass_resub.svg", height = 2.2, width = 3.8)
+
+
+#stats on chemical class performance
+min(Disagg_chem$GNNmean) #0.16
+max(Disagg_chem$GNNmean) #0.52
+
+
+#clean up environment
+rm(corr_class, Disagg_chem, Disagg_chem_models, GNN_normalize, gnnNorm_long, RF_normalize, rfNorm_long)
+```
+
+
+```{r}
+#GNN vs median panelist // RF vs median panelist // GNN vs RF
+
+#filter model_cor to non-dropped molecules
+ModelCor_thinned <- ModelCor %>%
+  filter(Disqualification.reason == "")
+
+cor_medianPanelist <- ChemCor2 %>%
+  group_by(SampleIdentifier) %>%
+  summarize(MedianR = median(corP))%>%
+  rename(RedJade.Code = SampleIdentifier)
+
+OTT_test <- ModelCor_thinned %>%
+  left_join(cor_medianPanelist) %>%
+  mutate(GNN.beats.Median = case_when(corGNN > MedianR ~ "yes",
+                                TRUE ~ "no"),
+         RF.beats.Median = case_when(corRF > MedianR ~ "yes",
+                                TRUE ~ "no"))
+
+#calculate percent of cases in which GNN or RF come closer to panel mean than median panelist
+OTT_test %>%
+  group_by(GNN.beats.Median)%>%
+  tally()
+175/323 #54.2% 
+
+OTT_test %>%  
+  group_by(RF.beats.Median)%>%
+  tally()
+141/323 #43.7% 
+
+#conduct 2-sided paired t-test comparing each pair of GNN, RF, and median panelist correlation to panel mean (per molecule)
+t.test(OTT_test$corGNN, OTT_test$MedianR, alternative = "two.sided", paired = TRUE) #p-value = 0.519
+t.test(OTT_test$corRF, OTT_test$MedianR, alternative = "two.sided", paired = TRUE) #p-value = 5.22e-05
+t.test(OTT_test$corRF, OTT_test$corGNN, alternative = "two.sided", paired = TRUE) #p-value = 2.253e-09
+
+mean(cor_medianPanelist$MedianR)
+```
+
+
+
+
+## Figure 3D
+(D) Categorization of gas chromatography-olfactometry quality control results for 50 validation set stimuli. 
+```{r, message=F, warning=F}
+GCO <- c("Odor caused by nominal compound" = 11, 
+         "Minor impact on odor by contaminants" = 15,
+         "Cause of odor cannot be determined" = 4, 
+         "Major impact on odor by contaminants" = 5, 
+         "Odor not caused by nominal compound" = 15)
+
+waffle(GCO, rows = 5, flip = F, legend_pos = "right", size = 1, glyph_size = 1, reverse = F,
+       colors = c("#2166ac", "#67a9cf", "#cccccc", "#f7941d", "#b2182b"))
+
+ggsave("Resubmission/Final Figures/Figure 3 panels/GCO_waffle_resub.svg", height = 2, width = 5.5)
+```
+
+
+## Figure S9
+Panel mean (n≥15 subjects) test-retest correlation (R) for the 55 descriptors in the lexicon applied to the 400 novel odorants in the prospective validation set. Each dot represents 1 molecule. Descriptors are ordered by descending correlation. 
+```{r, message=F, warning=F}
+#plot mean ratings from rep1 vs rep2
+meansTRT <- S3 %>%
+  pivot_longer(NoOdor:Fishy, names_to = "Descriptor", values_to = "Value") %>%
+  group_by(SampleIdentifier, Descriptor, Rep) %>%
+  summarise(GroupMean = mean(Value, na.rm = T)) %>%
+  pivot_wider(names_from = "Rep", values_from = "GroupMean", names_prefix = "Rep")
+
+##### mean TRT for all Descriptors, faceted by Descriptor, sorted by R #####
+meansTRT %>%
+  group_by(Descriptor)%>%
+  mutate(R =  cor(Rep1, Rep2),
+         Rlabel = paste0("R=", round(cor(Rep1, Rep2),2)))%>%
+  filter(Descriptor != "NoOdor")%>%
+  ggplot( aes(Rep1, Rep2, label= Rlabel)) +
+  geom_point( alpha=0.6)+
+  geom_smooth(method = "lm", color = "royalblue")+
+  geom_text(color = "blue",
+            x=1.5, y=4, size = 3)+
+  facet_wrap(~fct_reorder(Descriptor, R, .desc = T))+
+  scale_x_continuous(limits = c(0,5), expand = c(0,0))+
+  scale_y_continuous(limits = c(0,5), expand = c(0,0))+
+  theme_classic()+
+  #scale_color_manual(values = c("steelblue1", "maroon", "gold2"))+
+  #scale_shape_manual(values = c(17, 16, 15))+
+  xlab("Panel Mean - 1st Replicate")+
+  ylab("Panel Mean - 2nd Replicate")+
+  theme(legend.position = "none")
+
+```
+
+
+## Figure S10 
+Panel mean (n=49) test-retest correlation (R) for the 19 descriptors in the DREAM olfaction challenge dataset (6). Each dot represents 1 molecule. Descriptors are ordered by descending correlation. 
+```{r, message=F, warning=F}
+#read in DREAM data from Keller et al 2016 DOI: 10.1126/science.aal2014
+DREAM <- read.table("DREAMTrainSet.txt", fill = T, header = T, sep = "\t", comment.char = "")
+
+#remove replicate from odor name - redundant with replicate column
+DREAM$Odor <- gsub("\\(replicate)", "", DREAM$Odor)
+#remove spaces
+DREAM$Odor <- str_trim(DREAM$Odor)
+
+#find repeated odors
+rep.odors <- unique(DREAM[DREAM$Replicate == "replicate ", "Odor"])
+
+#calculate mean values
+DREAMmeans <- DREAM %>%
+  filter(Odor %in% rep.odors) %>%
+  pivot_longer(INTENSITY.STRENGTH:CHEMICAL, names_to = "Descriptor", values_to = "Rating")%>%
+  mutate(Rep = case_when(Replicate == "" ~ "Rep1",
+                         TRUE ~ "Rep2"))%>%
+  select(Odor, Intensity, Rep, Descriptor, subject.., Rating) %>%
+  group_by(Odor, Intensity, Descriptor, Rep)%>%
+  summarise(meanRating = mean(Rating, na.rm = T))%>%
+  pivot_wider(names_from = "Rep", values_from = "meanRating")
+
+#DREAM mean TRT for all Descriptors, faceted by Descriptor, sorted by R
+DREAMmeans %>%
+  filter(!Descriptor %in% c("INTENSITY.STRENGTH", "VALENCE.PLEASANTNESS"))%>%
+  mutate(Descriptor = str_replace(Descriptor, ".URINOUS", replacement = ""))%>%
+  group_by(Descriptor)%>%
+  mutate(R = cor(Rep1, Rep2),
+         Rlabel =  paste0("R=", round(cor(Rep1, Rep2),2)))%>%
+  ggplot( aes(Rep1, Rep2, label= Rlabel)) +
+  geom_point( alpha=0.6)+
+  geom_smooth(method = "lm", color = "royalblue")+
+  geom_text(color = "blue",
+            x=24, y=85, size = 3)+
+  facet_wrap(~fct_reorder(Descriptor, R, .desc = T), ncol = 8)+
+  scale_x_continuous(limits = c(0,100), expand = c(0,0))+
+  scale_y_continuous(limits = c(0,100), expand = c(0,0))+
+  theme_classic()+
+  xlab("Panel Mean - 1st Replicate")+
+  ylab("Panel Mean - 2nd Replicate")+
+  theme(legend.position = "none")
+```
+
+
+
+## Figure S11
+Panel mean test-retest correlation for the 19 descriptors in the DREAM olfaction challenge (left) (6) and for the 55 descriptors in the present study (right). Each dot represents test-retest correlation for one odor descriptor. 
+```{r, message=F, warning=F}
+#summarise monell TRT, include intensity & pleasantness
+Monell.TRT <- S3 %>%
+  pivot_longer(Intensity:Fishy, names_to = "Descriptor", values_to = "Value") %>%
+  group_by(SampleIdentifier, Descriptor, Rep) %>%
+  summarise(GroupMean = mean(Value, na.rm = T)) %>%
+  pivot_wider(names_from = "Rep", values_from = "GroupMean", names_prefix = "Rep")%>%
+  drop_na()%>%
+  group_by(Descriptor)%>%
+  summarise(R = cor(Rep1, Rep2))%>%
+  mutate(Cohort = "Monell")
+
+#summarise DREAM TRT
+DREAM.TRT <- DREAMmeans %>%
+  group_by(Descriptor)%>%
+  summarise(R = cor(Rep1, Rep2))%>%
+  mutate(Cohort = "DREAM")
+
+#calculate mean of TRT distribution
+mean(Monell.TRT$R)
+mean(DREAM.TRT$R)
+
+# violin plot comparing mean TRT btw DREAM and Monell cohorts
+Monell.TRT %>%
+  bind_rows(., DREAM.TRT)%>%
+  ggplot( ) +
+  geom_violin( aes(x= Cohort, y=R), alpha=0.6, draw_quantiles = c(0.5))+
+  geom_dotplot(aes(x = Cohort, y=R), binaxis = "y", binwidth = 0.025, stackdir = "center", alpha=0.6)+
+  ylab("Panel mean test-retest correlation")+
+  scale_y_continuous(limits = c(0,1), breaks = seq(0,1, by=0.1))+
+  theme_classic()+
+  theme(legend.position = "none",
+        axis.title.x = element_blank()  )
+
+#clean up environment
+rm(DREAM, DREAM.TRT, DREAMmeans, meansTRT, Monell.TRT)
+```
+
+## Figure S14
+For the molecules (A-D) 1-cyclopropylethanol, (E-H) 3,3-dimethylcyclohexan-1-one, (I-L) 2-Methylquinolin-8-ol, (M-P) 2-Phenoxyethylamine, (A, E, I, M) GNN model label predictions, (B, F, J, N) random forest (RF) model label predictions, (C, G, K, O) panel mean ratings with standard error bars, and (D, H, L, P) individual panelist ratings, averaged over 2 replicates, for the molecule 2,3-dihydrobenzofuran-5-carboxaldehyde. The top 5 ranked descriptors for each molecule are in orange (GNN), purple (RF), or green (panel). Descriptors in panels are ordered by panel mean ratings for the given molecule. Panels are annotated with the Pearson correlation coefficient of their data to the panel mean rating. Panels D, H, L, and P include panelist/panel correlation coefficients for the panelist that best matches the panel mean and for the panelist with the median match.
+```{r, message=F, warning=F}
+### Resubmission ###
+#Make additional versions for supplemental
+
+#make list to receive plots
+plot_list <- list()
+
+#choose GCO clean molecules
+sampleIDs <- c(6, 153, 161, 251)
+
+#now using color brewer palette 2
+palette <- brewer.pal(n=4, "Set2")
+#order: green - people, orange - gnn, purple - rf, pink - other
+
+#loop through 4 new GCO clean molecules
+for(i in 1:length(sampleIDs)){
+sampleID <- sampleIDs[i]
+#calc cor
+cor_subj <- ChemCor2 %>%
+  filter(SampleIdentifier == sampleID) %>%
+  group_by(SubjectCode) %>%
+  summarise(corP = mean(corP)) %>%
+  mutate(SubjectCode = reorder(SubjectCode, corP, FUN = mean))
+
+#make RF part of the figure
+rffig <-   ratings.gnn %>%
+  mutate(rfTop5 = factor(rfTop5,
+                         levels = c("yes", "no")))%>%
+  filter(SampleIdentifier == sampleID) %>%
+  ggplot( aes( reorder(Descriptor, -MeanRating), RFprediction, fill = rfTop5))+
+  geom_bar(stat = "identity") +
+  #geom_text(data = ratings.gnn %>% filter(SampleIdentifier ==6 & gnnTop5 == "yes"), 
+  #          aes(y = GNNprediction-0.002, label = Descriptor), color = "black", hjust = 0, nudge_x = 1)+
+  scale_fill_manual(values = c(palette[3], "gray"),
+                    labels = c("Top 5 predicted labels", "All other labels"))+
+  theme_classic()+
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        legend.position = c(0.9, 0.8),
+        legend.title = element_blank())+
+  ylim(0, 1)+
+  ylab("RF \np(label applies)")
+
+
+#make GNN part of the figure
+gnnfig <-   ratings.gnn %>%
+  mutate(gnnTop5 = factor(gnnTop5,
+                          levels = c("yes", "no")))%>%
+  filter(SampleIdentifier == sampleID) %>%
+  ggplot( aes( reorder(Descriptor, -MeanRating), GNNprediction, fill = gnnTop5))+
+  geom_bar(stat = "identity") +
+  #geom_text(data = ratings.gnn %>% filter(SampleIdentifier ==6 & gnnTop5 == "yes"), 
+  #          aes(y = GNNprediction-0.002, label = Descriptor), color = "black", hjust = 0, nudge_x = 1)+
+  scale_fill_manual(values = c(palette[2], "gray"),
+                    labels = c("Top 5 predicted labels", "All other labels"))+
+  theme_classic()+
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        legend.position = c(0.9, 0.8),
+        legend.title = element_blank())+
+  ylim(0, 1)+
+  ylab("GNN \np(label applies)")
+
+#make rata part of the figure
+ratafig <- ratings.gnn %>%
+  mutate(rataTop5 = factor(rataTop5,
+                           levels = c("yes", "no")))%>%
+  filter(SampleIdentifier == sampleID) %>%
+  ggplot( aes( reorder(Descriptor, -MeanRating), MeanRating, fill = rataTop5))+
+  geom_bar(stat = "identity")+
+  geom_errorbar( aes(ymin = MeanRating - se, ymax = MeanRating + se))+
+  #geom_text(data = ratings.gnn %>% filter(SampleIdentifier ==6 & rataTop5 == "yes"), 
+  #          aes(y = MeanRating, label = Descriptor), color = "black", hjust = 0, nudge_x = 1)+
+  #scale_y_reverse()+
+  scale_fill_manual(values = c(palette[1], "gray"),
+                    labels = c("Top 5 rated labels", "All other labels"))+
+  theme_classic()+
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0, 0, 0, 0), "cm"),
+        legend.position = c(0.88, 0.8),
+        legend.title = element_blank())+
+  ylab("Panel mean rating")
+
+#raw data plot
+raster <- RATA.long %>%
+  filter(SampleIdentifier == sampleID) %>%
+  group_by(Descriptor)%>%
+  mutate(MeanRating = mean(Value))%>%
+  rename(Rating = Value)%>%
+  left_join(., cor_subj)%>%
+  ggplot( aes(reorder(SubjectCode, corP), reorder(Descriptor, -MeanRating), fill = Rating))+
+  geom_raster() +
+  coord_flip()+
+  xlab("Panelists")+
+  scale_fill_distiller(type = "seq", direction = 1, palette = 2) +
+  theme(legend.position = c(0.95, 0.55),
+        legend.key.height = unit(0.45, 'cm'),
+        legend.text = element_text(size = 8),
+        axis.text.x = element_text(size=9, angle = 60, hjust = 1),
+        axis.title.x = element_blank(), 
+        axis.text.y = element_text(size = 6))
+
+#put subplots together
+plot_list[[i]] <- plot_grid( gnnfig, NULL, rffig, NULL, ratafig, NULL, raster, ncol = 1, align = c("hv"), 
+           rel_heights = c(.6, -0.22, 0.6, -0.22, 0.6, -0.22, 0.7))
+}
+
+plot_list
+```
+
+```{r, warning=F}
+#clean up environment
+rm(ChemCor2, cor_subj, gnnfig, plot_list, raster, RATA_normalized, RATA.long, ratafig, results, rffig, sampleID, sampleIDs)
+```
+
+
+## Figure S17
+Label frequency among contaminated molecules and full test set. Plot shows percent of molecules dropped due to odorous contamination (“QC-dropped”, n = 19) with a given label (mean panel rating > 1) in orange and percent of molecules in the full test set (n = 399) with a given label (mean panel rating > 1) in blue. Odor labels such as “fishy” and “garlic” are much more common among contaminated molecules than in the full test set.
+```{r, message=F, warning=F}
+#filter RATA data to just labels with panel mean rating > 1
+panel_df <- S3 %>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Rating")%>%
+  group_by(SampleIdentifier, Descriptor)%>%
+  summarise(meanRating = mean(Rating)) %>%
+  filter(meanRating > 1)%>% 
+  group_by(Descriptor)%>%
+  tally()%>%
+  mutate(Type = "Full Test Set Panel Ratings")
+
+#RATA profile for molecules dropped due to confirmed contaminant (verdict B or C)
+drop_df <- S3 %>%
+  left_join(S1, by = c("SampleIdentifier" = "RedJade.Code")) %>% 
+  filter(GCO.result != "")%>% #in QC set
+  filter(Disqualification.reason != "") %>% #dropped because of QC results
+  # group_by(SampleName)%>% #19 molecules dropped due to contamination
+  # tally()
+  select(SampleIdentifier, Green:Fishy)%>%
+  pivot_longer(Green:Fishy, names_to = "Descriptor", values_to = "Rating")%>%
+  group_by(SampleIdentifier, Descriptor)%>%
+  summarise(meanRating = mean(Rating)) %>%
+  filter(meanRating > 1)%>% 
+  group_by(Descriptor)%>%
+  tally()%>%
+  mutate(Type = "QC-dropped Molecule Ratings")
+
+#set order of descriptors
+most_contaminated <- drop_df %>%
+  arrange(-n)%>%
+  select(Descriptor)
+
+use_order <- panel_df %>%
+  filter(! Descriptor %in% most_contaminated$Descriptor) %>%
+  arrange(-n)%>%
+  select(Descriptor)
+
+order <- most_contaminated %>%
+  bind_rows(use_order)
+
+order <- order$Descriptor
+
+#relative frequency of labels among contaminated molecules and full test set
+panel_df %>%
+  bind_rows(drop_df)%>%
+  #case_when was not working, resorted to nested ifelse statements
+  mutate(relFreq = ifelse(Type == "Full Test Set Panel Ratings", n*100/399, n*100/19))%>%
+  mutate(Type = fct_relevel(Type,
+                            levels = c("QC-dropped Molecule Ratings", 
+                                       "Full Test Set Panel Ratings"
+                                       )))%>%
+  mutate(Descriptor = fct_relevel(Descriptor, 
+                                  levels = c(order)))%>%
+  ggplot( aes(x = Descriptor, relFreq, fill = Type)) +
+  geom_bar(stat = "identity", position = position_dodge2(reverse = F))+
+  scale_fill_manual(values = c("orangered", "skyblue"))+
+  theme_classic()+
+  #scale_x_discrete(breaks = seq(5,45, by = 5))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        text = element_text(size = 12),
+        panel.grid = )+
+  ylab("Percent molecules with mean label rating > 1")+
+  scale_y_continuous(sec.axis = dup_axis())+
+  ggtitle("Relative frequency of labels among contaminated molecules\nand full test set")
+```
+
+
+
+
+
