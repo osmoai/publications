@@ -1,6 +1,6 @@
 ---
 title: "A Principal Odor Map Unifies Diverse Tasks in Olfactory Perception"
-author: "Brian K. Lee†, Emily J. Mayhew†, Benjamin Sanchez-Lengeling, Jennifer N. Wei, Wesley Qian, Kelsie Little, Matthew Andres, Britney B. Nguyen, Theresa Moloy, Jane Parker, Richard C. Gerkin, Joel D. Mainland, Alex Wiltschko"
+author: "Brian K. Lee†, Emily J. Mayhew†, Benjamin Sanchez-Lengeling, Jennifer N. Wei, Wesley Qian, Kelsie Little, Matthew Andres, Britney B. Nguyen, Theresa Moloy, Jacob Yasonik, Jane Parker, Richard C. Gerkin, Joel D. Mainland, Alex Wiltschko"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -44,7 +44,7 @@ pacman::p_load(tidyverse, #data cleaning, reshaping, and plotting
 ### Read in datasets
 ```{r}
 #Metadata for 400 molecules comprising the prospective validation dataset
-S1 <- read.csv("Resubmission/Data S1.csv") %>%
+S1 <- read.csv("lee_et_al_2023/data/Data S1.csv") %>%
   rename("8.atoms.or.fewer" = "X..8.atoms...25.ile.",
           "13.atoms.or.more" = "X..13.atoms...75.ile.",
           "Alkyl.4.carbon.chain" = "Alkyl")%>%
@@ -53,19 +53,19 @@ S1 <- read.csv("Resubmission/Data S1.csv") %>%
   mutate(RedJade.Code = as.numeric(RedJade.Code))
 
 #Panelist evaluations of 400 novel odorants
-S3 <- read.csv("Resubmission/Data S3.csv")
+S3 <- read.csv("lee_et_al_2023/data/Data S3.csv")
 
 #Odor attribute predictions on 400 molecules by a random forest model trained on GS/LF datasets
-S4 <- read.csv("Resubmission/Data S4.csv")
+S4 <- read.csv("lee_et_al_2023/data/Data S4.csv")
 
 #Odor attribute predictions on 400 molecules by a graph neural network model trained on GS/LF datasets. Final layer.
-S5 <- read.csv("Resubmission/Data S5.csv")
+S5 <- read.csv("lee_et_al_2023/data/Data S5.csv")
 
 #Graph neural network embeddings on 400 molecules. Penultimate layer.
-S6 <- read.csv("Resubmission/Data S6.csv")
+S6 <- read.csv("lee_et_al_2023/data/Data S6.csv")
 
 #Correspondence table between internal odorant identifiers and chemical structures
-S7 <- read.csv("Data S7.csv")
+S7 <- read.csv("lee_et_al_2023/data/Data S7.csv")
 ```
 
 
@@ -327,10 +327,6 @@ OTT %>%
   scale_y_break(c(-0.2, -0.1))+
   ylab("Difference in Median Correlation \nRelative to Human Baseline")
 
-
-#save figure output
-ggsave("Resubmission/Final Figures/Figure 2 panels/MulticomparisonOTTbarplot.svg", height = 3, width = 3.2)
-
 #remove df from environment
 rm(OTT)
 ```
@@ -413,10 +409,6 @@ LabelCor %>%
   xlab("Correlation to Panel Mean")+
   theme(axis.title.y = element_blank(),
         axis.text.y = element_text(size=8))
-
-
-### save figure
-ggsave("Resubmission/Final Figures/Figure 3 panels/Disagg_Label_resub.svg", height = 7, width = 3.5)
 
 ```
 
@@ -547,8 +539,6 @@ ggplot(Disagg_chem, aes(corPsubjmean, ChemicalClass)) +
   theme(axis.title.y = element_blank(),
         axis.text.y = element_text(size=8))
 
-ggsave("Resubmission/Final Figures/Figure 3 panels/Disagg_ChemClass_resub.svg", height = 2.2, width = 3.8)
-
 
 #stats on chemical class performance
 min(Disagg_chem$GNNmean) #0.16
@@ -613,7 +603,6 @@ GCO <- c("Odor caused by nominal compound" = 11,
 waffle(GCO, rows = 5, flip = F, legend_pos = "right", size = 1, glyph_size = 1, reverse = F,
        colors = c("#2166ac", "#67a9cf", "#cccccc", "#f7941d", "#b2182b"))
 
-ggsave("Resubmission/Final Figures/Figure 3 panels/GCO_waffle_resub.svg", height = 2, width = 5.5)
 ```
 
 
@@ -655,7 +644,7 @@ meansTRT %>%
 Panel mean (n=49) test-retest correlation (R) for the 19 descriptors in the DREAM olfaction challenge dataset (6). Each dot represents 1 molecule. Descriptors are ordered by descending correlation. 
 ```{r, message=F, warning=F}
 #read in DREAM data from Keller et al 2016 DOI: 10.1126/science.aal2014
-DREAM <- read.table("DREAMTrainSet.txt", fill = T, header = T, sep = "\t", comment.char = "")
+DREAM <- read.table("lee_et_al_2023/data/DREAMTrainSet.txt", fill = T, header = T, sep = "\t", comment.char = "")
 
 #remove replicate from odor name - redundant with replicate column
 DREAM$Odor <- gsub("\\(replicate)", "", DREAM$Odor)
@@ -742,7 +731,7 @@ rm(DREAM, DREAM.TRT, DREAMmeans, meansTRT, Monell.TRT)
 ## Figure S14
 For the molecules (A-D) 1-cyclopropylethanol, (E-H) 3,3-dimethylcyclohexan-1-one, (I-L) 2-Methylquinolin-8-ol, (M-P) 2-Phenoxyethylamine, (A, E, I, M) GNN model label predictions, (B, F, J, N) random forest (RF) model label predictions, (C, G, K, O) panel mean ratings with standard error bars, and (D, H, L, P) individual panelist ratings, averaged over 2 replicates, for the molecule 2,3-dihydrobenzofuran-5-carboxaldehyde. The top 5 ranked descriptors for each molecule are in orange (GNN), purple (RF), or green (panel). Descriptors in panels are ordered by panel mean ratings for the given molecule. Panels are annotated with the Pearson correlation coefficient of their data to the panel mean rating. Panels D, H, L, and P include panelist/panel correlation coefficients for the panelist that best matches the panel mean and for the panelist with the median match.
 ```{r, message=F, warning=F}
-### Resubmission ###
+
 #Make additional versions for supplemental
 
 #make list to receive plots
